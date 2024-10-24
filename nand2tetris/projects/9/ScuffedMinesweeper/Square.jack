@@ -1,0 +1,122 @@
+
+/** Implements a empty square.
+    The square has top-left x and y coordinates, and a size. */
+class Square {
+
+    field int x, y; // screen location of the top-left corner of this square
+    field int size; // length of this square, in pixels
+    field int move; // how far the square should move
+    /** Constructs and draws a new square with a given location and size. */
+    constructor Square new(int ax, int ay, int asize, int amove) {
+        let x = ax;
+        let y = ay;
+        let size = asize;
+        let move = amove;
+        do draw();
+        return this;
+    }
+    // Scuffed code for checking if there is a mine, if not, cross out the square
+    method int checkMine() {
+        if ((x + y) > (x+move+size)) {
+            return 1;
+        } else {
+            do drawRevealed();
+            return 0;
+        }
+    }
+
+    /** Disposes this square. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Draws this square in its current (x,y) location */
+    method void draw() {
+        // Draws the square using the color black
+        do Screen.setColor(true);
+        do Screen.drawLine(x,y,x+size,y);
+        do Screen.drawLine(x,y+size,x+size,y+size);
+        do Screen.drawLine(x,y,x,y+size);
+        do Screen.drawLine(x+size,y,x+size,y+size);
+        return;
+    }
+    // Draws a cross
+    method void drawRevealed() {
+        do Screen.setColor(true);
+        do Screen.drawLine(x,y,x+size,y+size);
+        do Screen.drawLine(x+size,y,x,y+size);
+        return;
+    }
+
+
+    /** Erases this square. */
+    method void erase() {
+        // Draws the square using the color white (background color)
+        do Screen.setColor(false);
+        do Screen.drawLine(x,y,x+size,y);
+        do Screen.drawLine(x,y+size,x+size,y+size);
+        do Screen.drawLine(x,y,x,y+size);
+        do Screen.drawLine(x+size,y,x+size,y+size);
+        return;
+    }
+
+    /** Moves this square up by move amount of pixels (if within square). */
+    // The rest of the methods are the same but for different directions
+    method void moveUp() {
+        if ((y - move) > 1) {
+            // erases old square
+            do erase();
+            let y = y - move;
+            // draws new square in new location
+            do Screen.setColor(true);
+            do Screen.drawLine(x,y,x+size,y);
+            do Screen.drawLine(x,y+size,x+size,y+size);
+            do Screen.drawLine(x,y,x,y+size);
+            do Screen.drawLine(x+size,y,x+size,y+size);
+        }
+        return;
+    }
+
+
+    method void moveDown() {
+        if ((y + size + move) < 255) {
+            do erase();
+            let y = y + move;
+            do Screen.setColor(true);
+            do Screen.drawLine(x,y,x+size,y);
+            do Screen.drawLine(x,y+size,x+size,y+size);
+            do Screen.drawLine(x,y,x,y+size);
+            do Screen.drawLine(x+size,y,x+size,y+size);
+        }
+        return;
+    }
+
+
+    method void moveLeft() {
+        if ((x - move) > 1) {
+            do erase();
+            let x = x - move;
+            do Screen.setColor(true);
+            do Screen.drawLine(x,y,x+size,y);
+            do Screen.drawLine(x,y+size,x+size,y+size);
+            do Screen.drawLine(x,y,x,y+size);
+            do Screen.drawLine(x+size,y,x+size,y+size);
+        }
+        return;
+    }
+
+
+    method void moveRight() {
+        if ((x + size + move) < 511) {
+            do erase();
+            let x = x + move;
+            do Screen.setColor(true);
+            do Screen.drawLine(x,y,x+size,y);
+            do Screen.drawLine(x,y+size,x+size,y+size);
+            do Screen.drawLine(x,y,x,y+size);
+            do Screen.drawLine(x+size,y,x+size,y+size);
+        }
+        return;
+    }
+}
