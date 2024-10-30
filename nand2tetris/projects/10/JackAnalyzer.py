@@ -1,6 +1,6 @@
 import os
 import sys
-
+from CompilationEngine import CompilationEngine
 
 
 def main(argv: list[str]):
@@ -40,8 +40,11 @@ def main(argv: list[str]):
         ]
 
 
-        path = target.split("\\")[1]
+        path = target.split("\\")[-1]
+        inputfile = path.removesuffix(".jack") + "T.xml"
+        outputfile = path.removesuffix(".jack") + ".xml"
         tokenizer = open(path.removesuffix(".jack") + "T.xml", "w")
+
         with open(target, 'r') as f:
             in_word = False
             in_string = False
@@ -112,7 +115,9 @@ def main(argv: list[str]):
                             else:
                                 tokenizer.write("<symbol>"+c+"</symbol>\n")
             tokenizer.write("</tokens>\n")
-
+        tokenizer.close()
+        parser = CompilationEngine(inputfile, outputfile)
+        parser.compileClass()
 
         print(f'{target} parsed successfully')
 
