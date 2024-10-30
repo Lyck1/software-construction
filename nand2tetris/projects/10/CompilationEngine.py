@@ -5,7 +5,8 @@ class CompilationEngine:
         self.statementKeywords = ['let', 'if', 'while', 'do', 'return']
         self.varKeywords = ['field', 'static']
         self.functionKeywords = ['function', 'constructor', 'method']
-        self.unary = ['-', '~']
+        self.unary = ['~']
+        self.operations = ['+', '-', '=', '|', '&lt;', '&gt;', '&amp;', '-']
         self.tokenizer = JackTokenizer(input_file)
         self.output = open(output_file, "w")
 
@@ -202,7 +203,7 @@ class CompilationEngine:
     def compileExpression(self):
         self.output.write("<expression>\n")
         self.compileTerm()
-        if self.tokenizer.get_token() in "+-=<>|":
+        if self.tokenizer.get_token() in self.operations:
             self.output.write(self.tokenizer.get_current_line())
             self.tokenizer.next_line()
             self.compileTerm()
@@ -212,7 +213,7 @@ class CompilationEngine:
         self.output.write("<term>\n")
         skipped = True
         self.output.write(self.tokenizer.get_current_line())
-        if self.tokenizer.get_token() not in "([.~-":
+        if self.tokenizer.get_token() not in "([.~":
             self.tokenizer.next_line()
             skipped = False
         if self.tokenizer.get_token() == "[":
