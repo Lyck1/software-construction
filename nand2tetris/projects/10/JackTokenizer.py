@@ -10,6 +10,8 @@ class JackTokenizer:
         self.peek_next = None
         self.peek_tokenType = None
         self.peek_token = None
+        self.previous_line = None
+        self.previous_token = None
 
 
 
@@ -23,6 +25,11 @@ class JackTokenizer:
             self.tokenType = self.current_line.split("<")[1].split(">")[0]
             self.token = self.current_line.split(">")[1].split("<")[0].strip()
             self.current_line_index += 1
+
+    def get_previous_token(self):
+        self.previous_line = self.lines[self.current_line_index - 1]
+        self.previous_token = self.previous_line.split(">")[1].split("<")[0].strip()
+        return self.previous_token
 
     def get_token(self):
         return self.token

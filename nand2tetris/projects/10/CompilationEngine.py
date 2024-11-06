@@ -5,7 +5,7 @@ class CompilationEngine:
         self.statementKeywords = ['let', 'if', 'while', 'do', 'return']
         self.varKeywords = ['field', 'static']
         self.functionKeywords = ['function', 'constructor', 'method']
-        self.unary = ['~']
+        self.unary = ['~','-']
         self.operations = ['+', '-', '=', '|', '&lt;', '&gt;', '&amp;', '-']
         self.tokenizer = JackTokenizer(input_file)
         self.output = open(output_file, "w")
@@ -207,6 +207,10 @@ class CompilationEngine:
             self.output.write(self.tokenizer.get_current_line())
             self.tokenizer.next_line()
             self.compileTerm()
+        elif self.tokenizer.get_token() in "*/":
+            self.output.write(self.tokenizer.get_current_line())
+            self.tokenizer.next_line()
+            self.compileTerm()
         self.output.write("</expression>\n")
 
     def compileTerm(self):
@@ -224,10 +228,25 @@ class CompilationEngine:
             self.compileExpression()
             self.output.write(self.tokenizer.get_current_line())
             self.tokenizer.next_line()
-        elif self.tokenizer.get_token() in self.unary:
+        elif self.tokenizer.get_token() in '~':
             if skipped:
                 self.tokenizer.next_line()
             self.compileTerm()
+        elif self.tokenizer.get_token() == '-' and self.tokenizer.get_previous_token() == '(':
+            if skipped:
+                self.tokenizer.next_line()
+            self.output.write("<expression>\n")
+            self.output.write("<term>\n")
+            self.output.write(self.tokenizer.get_current_line())  # -
+            self.tokenizer.next_line()
+            self.output.write("<term>\n")
+            self.output.write(self.tokenizer.get_current_line())  # j
+            self.tokenizer.next_line()
+            self.output.write("</term>\n")
+            self.output.write("</term>\n")
+            self.output.write("</expression>\n")
+            self.output.write(self.tokenizer.get_current_line())  # )
+            self.tokenizer.next_line()
         elif self.tokenizer.get_token() in "(":
             if skipped:
                 self.tokenizer.next_line()
@@ -250,8 +269,8 @@ class CompilationEngine:
 
     def compileSmallTerm(self):
         self.output.write("<term>\n")
-        self.output.write(self.tokenizer.get_current_line())
-        self.tokenizer.next_line() # (
+        self.output.write(self.tokenizer.get_current_line()) # (
+        self.tokenizer.next_line()
         self.output.write("<expression>\n")
         self.output.write("<term>\n")
         self.output.write(self.tokenizer.get_current_line()) # -
